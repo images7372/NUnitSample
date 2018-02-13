@@ -1,0 +1,133 @@
+﻿@model MediaLibrary.ViewModels.Recording.CreateViewModel
+
+@{
+    ViewBag.Title = "Create";
+}
+
+<h2>Create</h2>
+
+
+@using (Html.BeginForm()) 
+{
+    @Html.AntiForgeryToken()
+    
+    <div class="form-horizontal">
+        <h4>Recording</h4>
+        <hr />
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        <div class="form-group">
+            @Html.LabelFor(model => model.Title, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Title, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Title, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.ReleaseDate, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.ReleaseDate, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.ReleaseDate, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Labels, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.DropDownListFor(model => model.SelectedLabelId, Model.Labels, new { htmlAttributes = new { @class = "form-control" } })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Artists, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.DropDownListFor(model => model.SelectedArtistId, Model.Artists, new { htmlAttributes = new { @class = "form-control" } })
+            </div>
+        </div>
+
+        <div id="Tracks">
+            <div id="Track">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.TrackTitles, htmlAttributes: new { @class = "control-label col-md-2" })
+                    <div class="col-md-10">
+                        @Html.TextBox("TrackTitles", null, new { htmlAttributes = new { @class = "form-control" } })
+                    </div>
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Durations, htmlAttributes: new { @class = "control-label col-md-2" })
+                    <div class="col-md-10">
+                        @Html.TextBox("Durations", null, new { htmlAttributes = new { @class = "form-control" } })
+                    </div>
+                </div>
+                <div class="col-md-offset-2 col-md-10">
+                    <input type="button" value="Delete" class="btn btn-default" id="Delete" />
+                </div>
+                <div class="col-md-offset-2 col-md-10">
+                    <input type="button" value="Up" class="btn btn-default" id="Up" />
+                    <input type="button" value="Down" class="btn btn-default" id="Down" />
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="button" value="Generate" class="btn btn-default" id="Generate" />
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="Create" class="btn btn-default" />
+            </div>
+        </div>
+    </div>
+}
+
+<div>
+    @Html.ActionLink("Back to List", "Index")
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+
+    <script type="text/javascript">
+
+        //Trackが一つの場合は削除不可とする
+        $(function () {
+            $('#Delete').hide();
+        })
+
+        //不要なTrack入力を削除する
+        $('#Tracks').on('click', '#Delete', function () {
+            var cnt = $('#Tracks').children('#Track').length;
+            if (cnt > 1)
+            {
+                $(this).parent().parent().remove();
+                if (cnt === 2)
+                {
+                    $('#Delete').animate().hide();
+                }
+            }
+        });
+
+        //複数のTrack入力を可能とするため
+        $('#Generate').click(function () {
+            $('#Delete').show();
+            $('#Track').clone().appendTo('#Tracks');
+
+        });
+
+        //上に曲順操作
+        $('#Tracks').on('click', '#Up', function () {
+            var thisTrack = $(this).parent().parent();
+            thisTrack.prev().before(thisTrack);
+        });
+
+        //下に曲順操作
+        $('#Tracks').on('click', '#Down', function () {
+            var thisTrack = $(this).parent().parent();
+            thisTrack.next().after(thisTrack);
+        });
+
+    </script>
+}

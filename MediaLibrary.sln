@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.26430.13
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MediaLibrary", "MediaLibrary\MediaLibrary.csproj", "{DC60E484-8FD1-47E4-958A-67905CA2BE71}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MediaLibrary.Tests", "MediaLibrary.Tests\MediaLibrary.Tests.csproj", "{EFD85DEC-DBD7-454D-8068-41138E780A86}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{DC60E484-8FD1-47E4-958A-67905CA2BE71}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DC60E484-8FD1-47E4-958A-67905CA2BE71}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DC60E484-8FD1-47E4-958A-67905CA2BE71}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DC60E484-8FD1-47E4-958A-67905CA2BE71}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EFD85DEC-DBD7-454D-8068-41138E780A86}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EFD85DEC-DBD7-454D-8068-41138E780A86}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EFD85DEC-DBD7-454D-8068-41138E780A86}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EFD85DEC-DBD7-454D-8068-41138E780A86}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
