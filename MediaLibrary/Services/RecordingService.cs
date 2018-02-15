@@ -38,6 +38,8 @@ namespace MediaLibrary.Services
         {
             var ret = new CreateViewModel()
             {
+                TrackTitles = new List<string>() { "" },
+                Durations = new List<int?>() { null },
                 Artists = _rep.GetAll<Artist>().Select(r => new SelectListItem() { Value = r.Id.ToString(), Text = r.Name }),
                 Labels = _rep.GetAll<Label>().Select(r => new SelectListItem() { Value = r.Id.ToString(), Text = r.Name })
             };
@@ -65,7 +67,9 @@ namespace MediaLibrary.Services
                 SelectedArtistId = rec.Artist.Id,
                 SelectedLabelId = rec.Label.Id,
                 TrackTitles = rec.Tracks.Select(r => r.Title).ToList(),
-                Durations = rec.Tracks.Select(r => (int?)r.Duration).ToList()
+                Durations = rec.Tracks.Select(r => (int?)r.Duration).ToList(),
+                Artists = _rep.GetAll<Artist>().Select(r => new SelectListItem() { Value = r.Id.ToString(), Text = r.Name }),
+                Labels = _rep.GetAll<Label>().Select(r => new SelectListItem() { Value = r.Id.ToString(), Text = r.Name })
             };
         }
 

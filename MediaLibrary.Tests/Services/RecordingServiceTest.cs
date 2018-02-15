@@ -64,6 +64,16 @@ namespace MediaLibrary.Tests.Services
                      _service.CreateCreateViewModel().Labels);
             }
 
+            [Test]
+            public void Tracksに表示用の空データが1件だけ存在する事()
+            {
+                var vm = _service.CreateCreateViewModel();
+                Assert.That(vm.TrackTitles.Count, Is.EqualTo(1));
+                Assert.That(vm.TrackTitles[0], Is.EqualTo(""));
+                Assert.That(vm.Durations.Count, Is.EqualTo(1));
+                Assert.IsNull(vm.Durations[0]);
+            }
+
             private void SelectListItemAssert(IEnumerable<SelectListItem> expected, IEnumerable<SelectListItem> actual)
             {
                 var lExpected = expected.ToList();
@@ -180,6 +190,9 @@ namespace MediaLibrary.Tests.Services
 
                 CollectionAssert.AreEqual(new string[] { "Foxy Lady", "Manic Depression", "Red House" }, rec.TrackTitles);
                 CollectionAssert.AreEqual(new int[] { 199, 210, 224 }, rec.Durations);
+
+                Assert.IsNotNull(rec.Artists);
+                Assert.IsNotNull(rec.Labels);
             }
 
             [Test]

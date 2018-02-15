@@ -134,8 +134,8 @@ namespace MediaLibrary.Tests.Controllers
             Assert.IsNull(vm.ReleaseDate);
             Assert.IsNull(vm.SelectedArtistId);
             Assert.IsNull(vm.SelectedLabelId);
-            Assert.IsNull(vm.TrackTitles);
-            Assert.IsNull(vm.Durations);
+            Assert.IsNotNull(vm.TrackTitles);   //初期表示の為に1件存在
+            Assert.IsNotNull(vm.Durations); //初期表示の為に1件存在
 
             Assert.IsNotNull(vm.Labels);
             Assert.IsNotNull(vm.Artists);
