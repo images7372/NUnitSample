@@ -12,6 +12,7 @@ namespace MediaLibrary.Tests
 {
     class ConnectionFixture
     {
+        //TODO:IRepositoryに修正要
         protected Repository _repos;
 
         [SetUp]

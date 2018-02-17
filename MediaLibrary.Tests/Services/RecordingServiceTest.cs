@@ -15,45 +15,81 @@ namespace MediaLibrary.Tests.Services
     [TestFixture]
     class RecordingServiceTest : ConnectionFixture
     {
-
-
-        [Test]
-        public void 全件削除出来る事()
+        #region ヘルパメソッド
+        //テスト用のレコード挿入、検証用に挿入したレコードを返す
+        public static Recording InsertInitialRecord()
         {
-            var service = RecordingService.GetInstance(_repos);
-            service.DeleteAll();
-            _repos.Reload();
-
-            Assert.That(_repos.GetAll<Recording>().Count(), Is.EqualTo(0));
+            var repos = new Repository();
+            var initial = new Recording()
+            {
+                Title = "Are You Experienced",
+                ReleaseDate = new DateTime(1967, 5, 12),
+                Artist = new Artist() { Name = "Jimi Hendrix" },
+                Label = new Label() { Name = "Track Record" },
+                Tracks = new List<Track>(){
+                    new Track()
+                    {
+                        Title = "Foxy Lady",
+                        Duration = 199
+                    },
+                    new Track()
+                    {
+                        Title = "Manic Depression",
+                        Duration = 210
+                    },
+                    new Track()
+                    {
+                        Title = "Red House",
+                        Duration = 224
+                    }
+                }
+            };
+            repos.Add(initial);
+            repos.Save();
+            repos.Reload();
+            return initial;
         }
+        #endregion
 
-        class CreateGet : ConnectionFixture
+        #region FillById
+        [TestFixture]
+        class FillByIdTest : ConnectionFixture
         {
-            RecordingService _service;
+            [Test, Ignore("テスト抜けてた")]
+            public void test()
+            {
+
+            }
+        }
+        #endregion
+
+        #region CreateCreateViewModel
+        [TestFixture]
+        class CreateCreateViewModelTest : ConnectionFixture
+        {
+
+            CreateViewModel _vm;
             [SetUp]
             public void SetUp()
             {
-                _service = RecordingService.GetInstance(_repos);
+                var service = RecordingService.GetInstance(_repos);
+                _vm = service.CreateCreateViewModel();
             }
 
             [Test]
-            public void CreateViewModel表示用のTitleがnullであること()
+            public void CreateViewModel表示用のTitleとReleaseDateがnullであること()
             {
-                Assert.That(null, Is.EqualTo(_service.CreateCreateViewModel().Title));
+                Assert.IsNull(_vm.Title);
+                Assert.IsNull(_vm.ReleaseDate);
             }
 
-            [Test]
-            public void CreateViewModel表示用のReleaseDateがnullであること()
-            {
-                Assert.That(null, Is.EqualTo(_service.CreateCreateViewModel().ReleaseDate));
-            }
 
             [TestCase]
             public void Recording表示用のArtistsに登録された値があること()
             {
                 SelectListItemAssert(
                     _repos.GetAll<Artist>().Select(r => new SelectListItem() { Value = r.Id.ToString(), Text = r.Name }),
-                    _service.CreateCreateViewModel().Artists);
+                    _vm.Artists);
             }
 
             [TestCase]
@@ -61,17 +97,16 @@ namespace MediaLibrary.Tests.Services
             {
                 SelectListItemAssert(
                     _repos.GetAll<Label>().Select(r => new SelectListItem() { Value = r.Id.ToString(), Text = r.Name }),
-                     _service.CreateCreateViewModel().Labels);
+                     _vm.Labels);
             }
 
             [Test]
-            public void Tracksに表示用の空データが1件だけ存在する事()
+            public void Tracksに表示用の初期表示用の空データが1件存在する事()
             {
-                var vm = _service.CreateCreateViewModel();
-                Assert.That(vm.TrackTitles.Count, Is.EqualTo(1));
-                Assert.That(vm.TrackTitles[0], Is.EqualTo(""));
-                Assert.That(vm.Durations.Count, Is.EqualTo(1));
-                Assert.IsNull(vm.Durations[0]);
+                Assert.That(_vm.TrackTitles.Count, Is.EqualTo(1));
+                Assert.That(_vm.TrackTitles[0], Is.EqualTo(""));
+                Assert.That(_vm.Durations.Count, Is.EqualTo(1));
+                Assert.IsNull(_vm.Durations[0]);
             }
 
             private void SelectListItemAssert(IEnumerable<SelectListItem> expected, IEnumerable<SelectListItem> actual)
@@ -84,19 +119,13 @@ namespace MediaLibrary.Tests.Services
                 }
             }
         }
+        #endregion
 
-        class CreatePost : ConnectionFixture
+        #region Insert
+        class Insert : ConnectionFixture
         {
             RecordingService _service;
             Recording _ret;
-            [SetUp]
-            public void SetUp()
-            {
-                _service = RecordingService.GetInstance(_repos);
-                var id = _service.Insert(_Record);
-                _ret = _repos.FindBy<Recording>(r => r.Id == id).First();
-            }
-
             CreateViewModel _Record = new CreateViewModel()
             {
                 Title = "Sgt. Peppers Lonely Hearts Club Band",
@@ -117,31 +146,41 @@ namespace MediaLibrary.Tests.Services
                 SelectedLabelId = 2
             };
 
+            [SetUp]
+            public void SetUp()
+            {
+                _service = RecordingService.GetInstance(_repos);
+                var id = _service.Insert(_Record);
+                _ret = _repos.FindBy<Recording>(r => r.Id == id).First();
+            }
+
             public void Recordingの登録が出来ること()
             {
-                Assert.That(_Record.Title, Is.EqualTo(_ret.Title));
+                Assert.That(_ret.Title, Is.EqualTo(_Record.Title));
             }
 
             [TestCase]
             public void Trackの登録が出来ること()
             {
-                Assert.That(_Record.TrackTitles.Count, Is.EqualTo(_ret.Tracks.Count()));
+                Assert.That(_ret.Tracks.Count, Is.EqualTo(_Record.TrackTitles.Count()));
             }
 
             [TestCase]
             public void Artistの登録が出来ること()
             {
-                Assert.That(_Record.SelectedArtistId, Is.EqualTo(_ret.Artist.Id));
+                Assert.That(_ret.Artist.Id, Is.EqualTo(_Record.SelectedArtistId));
             }
 
             [TestCase]
             public void Labelの登録が出来ること()
             {
-                Assert.That(_Record.SelectedLabelId, Is.EqualTo(_ret.Label.Id));
+                Assert.That(_ret.Label.Id, Is.EqualTo(_Record.SelectedLabelId));
             }
         }
+        #endregion
 
-        class EditGet : ConnectionFixture
+        #region GetCreateViewModel
+        class GetCreateViewModelTest : ConnectionFixture
         {
             Recording _initial;
             RecordingService _service;
@@ -149,33 +188,7 @@ namespace MediaLibrary.Tests.Services
             public void SetUp()
             {
                 _service = RecordingService.GetInstance(_repos);
-                _initial = new Recording()
-                {
-                    Title = "Are You Experienced",
-                    ReleaseDate = new DateTime(1967, 5, 12),
-                    Artist = new Artist() { Name = "Jimi Hendrix" },
-                    Label = new Label() { Name = "Track Record" },
-                    Tracks = new List<Track>(){
-                    new Track()
-                    {
-                        Title = "Foxy Lady",
-                        Duration = 199
-                    },
-                    new Track()
-                    {
-                        Title = "Manic Depression",
-                        Duration = 210
-                    },
-                    new Track()
-                    {
-                        Title = "Red House",
-                        Duration = 224
-                    }
-                }
-                };
-                _repos.Add(_initial);
-                _repos.Save();
-                _repos.Reload();
+                _initial = InsertInitialRecord();
             }
 
             [Test]
@@ -183,10 +196,10 @@ namespace MediaLibrary.Tests.Services
             {
                 var rec = _service.GetCreateViewModel(_initial.Id);
 
-                Assert.That(_initial.Title, Is.EqualTo(rec.Title));
-                Assert.That(_initial.ReleaseDate, Is.EqualTo(rec.ReleaseDate));
-                Assert.That(_initial.Artist.Id, Is.EqualTo(rec.SelectedArtistId));
-                Assert.That(_initial.Label.Id, Is.EqualTo(rec.SelectedLabelId));
+                Assert.That(rec.Title, Is.EqualTo(_initial.Title));
+                Assert.That(rec.ReleaseDate, Is.EqualTo(_initial.ReleaseDate));
+                Assert.That(rec.SelectedArtistId, Is.EqualTo(_initial.Artist.Id));
+                Assert.That(rec.SelectedLabelId, Is.EqualTo(_initial.Label.Id));
 
                 CollectionAssert.AreEqual(new string[] { "Foxy Lady", "Manic Depression", "Red House" }, rec.TrackTitles);
                 CollectionAssert.AreEqual(new int[] { 199, 210, 224 }, rec.Durations);
@@ -195,15 +208,27 @@ namespace MediaLibrary.Tests.Services
                 Assert.IsNotNull(rec.Labels);
             }
 
+        }
+        #endregion
+
+        #region IsExists
+        class IsExistsTest : ConnectionFixture
+        {
             [Test]
             public void Idに応じたデータがあればTrue無ければFalseを返す事()
             {
-                Assert.That(true, Is.EqualTo( _service.IsExists(_initial.Id)));
-                Assert.That(false, Is.EqualTo(_service.IsExists(0)));
+                var service = RecordingService.GetInstance(_repos);
+                var initial = InsertInitialRecord();
+
+                Assert.That(service.IsExists(initial.Id), Is.EqualTo(true));
+                Assert.That(service.IsExists(0), Is.EqualTo(false));
+
             }
         }
+        #endregion
 
-        class EditPost : ConnectionFixture
+        #region Update
+        class UpdateTest : ConnectionFixture
         {
             Recording _initial;
             RecordingService _service;
@@ -212,35 +237,7 @@ namespace MediaLibrary.Tests.Services
             public void SetUp()
             {
                 _service = RecordingService.GetInstance(_repos);
-                _initial = new Recording()
-                {
-                    Title = "Are You Experienced",
-                    ReleaseDate = new DateTime(1967, 5, 12),
-                    Artist = new Artist() { Name = "Jimi Hendrix" },
-                    Label = new Label() { Name = "Track Record" },
-                    Tracks = new List<Track>()
-                    {
-                        new Track()
-                        {
-                            Title = "Foxy Lady",
-                            Duration = 199
-                        },
-                        new Track()
-                        {
-                            Title = "Manic Depression",
-                            Duration = 210
-                        },
-                        new Track()
-                        {
-                            Title = "Red House",
-                            Duration = 224
-                        }
-                    }
-                };
-
-                _repos.Add(_initial);
-                _repos.Save();
-                _repos.Reload();
+                _initial = InsertInitialRecord();
 
                 _newEntry = new CreateViewModel()
                 {
@@ -270,11 +267,41 @@ namespace MediaLibrary.Tests.Services
                 _service.Update(_newEntry);
                 _repos.Reload();
 
-                Assert.That("Sgt. Peppers Lonely Hearts Club Band", Is.EqualTo(_repos.FindBy<Recording>(r => r.Id == _initial.Id).First().Title));
-                
+                Assert.That(_repos.FindBy<Recording>(r => r.Id == _initial.Id).First().Title, Is.EqualTo("Sgt. Peppers Lonely Hearts Club Band"));
+
             }
-                
         }
+        #endregion
+
+        #region SetValue
+        [TestFixture]
+        class SetValueTest : ConnectionFixture
+        {
+            [Test, Ignore("テスト抜けてた")]
+            public void test()
+            {
+
+            }
+        }
+        #endregion
+
+        #region DeleteAll
+        class DeleteAllTest : ConnectionFixture
+        {
+            [Test]
+            public void 全件削除出来る事()
+            {
+                InsertInitialRecord();
+
+                var service = RecordingService.GetInstance(_repos);
+                service.DeleteAll();
+                _repos.Reload();
+
+                Assert.That(_repos.GetAll<Recording>().Count(), Is.EqualTo(0));
+            }
+        }
+        #endregion
+
     }
         
     
