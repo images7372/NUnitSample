@@ -96,12 +96,14 @@ namespace MediaLibrary.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Edit([Bind(Include = "Id,Title,ReleaseDate,SelectedLabelId,SelectedArtistId,TrackTitles,Durations")]CreateViewModel vm)
         {
+            var service = RecordingService.GetInstance(_repos);
             if (ModelState.IsValid)
             {
-                var service = RecordingService.GetInstance(_repos);
                 service.Update(vm);
                 return RedirectToAction("Index");
             }
+
+            service.SetListItemSources(vm);
             return View(vm);
         }
 
