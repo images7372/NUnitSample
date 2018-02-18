@@ -12,10 +12,23 @@ using System.Net;
 
 namespace MediaLibrary.Tests.Controllers
 {
+    [TestFixture]
     class RecordingControllerTest : ConnectionFixture
     {
-        public static Recording InsertInitialRecord()
+        RecordingsController _controller;
+        Recording _initial;
+        CreateViewModel _vm;
+        [SetUp]
+        public void ParentSetUp()
         {
+            //不要データを残さない
+            var service = RecordingService.GetInstance(_repos);
+            service.DeleteAll();
+
+            //コントローラーのテストで使用
+            _controller = new RecordingsController(_repos);
+
+            //参照テストで使用
             var newrec = new Recording()
             {
                 Title = "Are You Experienced",
@@ -41,22 +54,38 @@ namespace MediaLibrary.Tests.Controllers
                 }
             };
 
-            var repos = new Repository();
-            repos.Add(newrec);
-            repos.Save();
-            repos.Reload();
-            return newrec;
+            _repos.Add(newrec);
+            _repos.Save();
+            _repos.Reload();
+            _initial = newrec;
+
+            //更新のテストで使用
+            _vm = new CreateViewModel()
+            {
+
+                Title = "Sgt. Peppers Lonely Hearts Club Band",
+                ReleaseDate = new DateTime(1967, 5, 26),
+                TrackTitles = new List<string>()
+                {
+                    "Sgt. Pepper's Lonely Hearts Club Band",
+                    "With a Little Help from My Friends",
+                    "Lucy in the Sky with Diamonds"
+                },
+                Durations = new List<int?>()
+                {
+                    122,
+                    163,
+                    208
+                },
+                SelectedArtistId = 1,
+                SelectedLabelId = 2
+
+            };
         }
 
         #region Create Get
-        class CreateGet : ConnectionFixture
+        class CreateGet : RecordingControllerTest
         {
-            RecordingsController _controller;
-            [SetUp]
-            public void SetUp()
-            {
-                _controller = new RecordingsController(_repos);
-            }
 
             [Test]
             public void CreateGetのViewNameが空白である事()
@@ -82,42 +111,12 @@ namespace MediaLibrary.Tests.Controllers
                 Assert.IsNotNull(vm.Labels);
                 Assert.IsNotNull(vm.Artists);
             }
-
-
         }
         #endregion
 
         #region Create Post
-        class CreatePostTest : ConnectionFixture
+        class CreatePostTest : RecordingControllerTest
         {
-            CreateViewModel _vm;
-            RecordingsController _controller;
-            [SetUp]
-            public void SetUp()
-            {
-                _vm = new CreateViewModel()
-                {
-
-                    Title = "Sgt. Peppers Lonely Hearts Club Band",
-                    ReleaseDate = new DateTime(1967, 5, 26),
-                    TrackTitles = new List<string>()
-                {
-                    "Sgt. Pepper's Lonely Hearts Club Band",
-                    "With a Little Help from My Friends",
-                    "Lucy in the Sky with Diamonds"
-                },
-                    Durations = new List<int?>()
-                {
-                    122,
-                    163,
-                    208
-                },
-                    SelectedArtistId = 1,
-                    SelectedLabelId = 2,
-                };
-                _controller = new RecordingsController(_repos);
-            }
-
             [Test]
             public void Titleに値があってDurationにない時はエラーとする事()
             {
@@ -192,17 +191,8 @@ namespace MediaLibrary.Tests.Controllers
 
         #region Edit Get
         [TestFixture]
-        class EditGetTest : ConnectionFixture
+        class EditGetTest : RecordingControllerTest
         {
-            RecordingsController _controller;
-            Recording _initial;
-            [SetUp]
-            public void SetUp()
-            {
-                _controller = new RecordingsController(_repos);
-                _initial = InsertInitialRecord();
-            }
-
             [Test]
             public void IdそのものがなければBadRequestを返す事()
             {
@@ -231,66 +221,8 @@ namespace MediaLibrary.Tests.Controllers
 
         #region Edit Post
 
-        class EditPostTest : ConnectionFixture
+        class EditPostTest : RecordingControllerTest
         {
-            CreateViewModel _vm;
-            RecordingsController _controller;
-            Recording _initial;
-            [SetUp]
-            public void Setup()
-            {
-                _initial = new Recording()
-                {
-                    Title = "Are You Experienced",
-                    ReleaseDate = new DateTime(1967, 5, 12),
-                    Artist = new Artist() { Name = "Jimi Hendrix" },
-                    Label = new Label() { Name = "Track Record" },
-                    Tracks = new List<Track>(){
-                    new Track()
-                    {
-                        Title = "Foxy Lady",
-                        Duration = 199
-                    },
-                    new Track()
-                    {
-                        Title = "Manic Depression",
-                        Duration = 210
-                    },
-                    new Track()
-                    {
-                        Title = "Red House",
-                        Duration = 224
-                    }
-                }
-                };
-                _repos.Add(_initial);
-                _repos.Save();
-                _repos.Reload();
-
-                _controller = new RecordingsController(_repos);
-                _vm = new CreateViewModel()
-                {
-
-                    Title = "Sgt. Peppers Lonely Hearts Club Band",
-                    ReleaseDate = new DateTime(1967, 5, 26),
-                    TrackTitles = new List<string>()
-                {
-                    "Sgt. Pepper's Lonely Hearts Club Band",
-                    "With a Little Help from My Friends",
-                    "Lucy in the Sky with Diamonds"
-                },
-                    Durations = new List<int?>()
-                {
-                    122,
-                    163,
-                    208
-                },
-                    SelectedArtistId = 1,
-                    SelectedLabelId = 2
-
-                };
-            }
-
             [Test]
             public void 更新に成功した場合のViewNameがIndexである事()
             {
