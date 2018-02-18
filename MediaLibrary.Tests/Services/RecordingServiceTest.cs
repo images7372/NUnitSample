@@ -55,10 +55,26 @@ namespace MediaLibrary.Tests.Services
         [TestFixture]
         class FillByIdTest : ConnectionFixture
         {
-            [Test, Ignore("テスト抜けてた")]
-            public void test()
+            RecordingService _service;
+            [SetUp]
+            public void SetUp()
             {
+                _service = RecordingService.GetInstance(_repos);
+            }
 
+            [Test]
+            public void IDを指定して特定の行を取得できる事()
+            {
+                var initial = InsertInitialRecord();
+                var rec = _service.FillById(initial.Id);
+
+                Assert.That(rec.Title, Is.EqualTo(initial.Title));
+            }
+
+            [Test]
+            public void 指定したIDが存在しない場合に例外を発生する事()
+            {
+                Assert.That(() => _service.FillById(0), Throws.TypeOf<InvalidOperationException>());
             }
         }
         #endregion
