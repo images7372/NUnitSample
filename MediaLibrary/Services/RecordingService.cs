@@ -60,17 +60,17 @@ namespace MediaLibrary.Services
         public CreateViewModel GetCreateViewModel(int? id)
         {
             var rec = _rep.FindBy<Recording>(r => r.Id == id).First();
-            return new CreateViewModel()
+            var ret =  new CreateViewModel()
             {
                 Title = rec.Title,
                 ReleaseDate = rec.ReleaseDate,
                 SelectedArtistId = rec.Artist.Id,
                 SelectedLabelId = rec.Label.Id,
                 TrackTitles = rec.Tracks.Select(r => r.Title).ToList(),
-                Durations = rec.Tracks.Select(r => (int?)r.Duration).ToList(),
-                Artists = _rep.GetAll<Artist>().Select(r => new SelectListItem() { Value = r.Id.ToString(), Text = r.Name }),
-                Labels = _rep.GetAll<Label>().Select(r => new SelectListItem() { Value = r.Id.ToString(), Text = r.Name })
+                Durations = rec.Tracks.Select(r => (int?)r.Duration).ToList()
             };
+            SetListItemSources(ret);
+            return ret;
         }
 
         public bool IsExists(int? id)
@@ -109,6 +109,19 @@ namespace MediaLibrary.Services
             _rep.DeleteAll<Track>();
             _rep.DeleteAll<Recording>();
             _rep.Save();
+        }
+
+        /// <summary>
+        /// ListItemSourceに値を設定する
+        /// 
+        /// Post時、ModelStateにエラーがあった場合にViewModelのListItemSourceが保持されない為
+        /// Controllerで改めて設定する事を想定している
+        /// </summary>
+        /// <param name="vm"></param>
+        public void SetListItemSources(CreateViewModel vm)
+        {
+            vm.Artists = _rep.GetAll<Artist>().Select(r => new SelectListItem() { Value = r.Id.ToString(), Text = r.Name });
+            vm.Labels = _rep.GetAll<Label>().Select(r => new SelectListItem() { Value = r.Id.ToString(), Text = r.Name });
         }
     }
 }

@@ -113,8 +113,7 @@ namespace MediaLibrary.Tests.Controllers
                     208
                 },
                     SelectedArtistId = 1,
-                    SelectedLabelId = 2
-
+                    SelectedLabelId = 2,
                 };
                 _controller = new RecordingsController(_repos);
             }
@@ -170,10 +169,23 @@ namespace MediaLibrary.Tests.Controllers
                 Assert.That(ret.RouteValues["action"].ToString(), Is.EqualTo("Index"));
             }
 
-            [Test, Ignore("テスト抜け：viewmodelがエラーの場合のview")]
-            public void ViewModelにエラーがある場合Viewに渡す値が正しいか()
+            [Test]
+            public void ViewModelにエラーがある場合ViewNameが空白か()
             {
+                _controller.ModelState.AddModelError("test", "test error");
 
+                var vr = _controller.Create(_vm) as ViewResult;
+                Assert.That(vr.ViewName, Is.EqualTo(""));
+            }
+
+            [Test]
+            public void ViewModelにエラーがある場合SelectListItemsに値があるか()
+            {
+                _controller.ModelState.AddModelError("test", "test error");
+
+                var vr = _controller.Create(_vm) as ViewResult;
+                Assert.IsNotNull(_vm.Artists);
+                Assert.IsNotNull(_vm.Labels);
             }
         }
         #endregion

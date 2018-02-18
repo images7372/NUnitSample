@@ -59,15 +59,16 @@ namespace MediaLibrary.Controllers
         // 詳細については、https://go.microsoft.com/fwlink/?LinkId=317598 を参照してください。
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "Id,Title,ReleaseDate,SelectedLabelId,SelectedArtistId,TrackTitles,Durations,Artists,Labels")]CreateViewModel recording)
+        public ActionResult Create([Bind(Include = "Id,Title,ReleaseDate,SelectedLabelId,SelectedArtistId,TrackTitles,Durations")]CreateViewModel recording)
         {
+            var service = Services.RecordingService.GetInstance(_repos);
             if (ModelState.IsValid)
             {
-                var service = Services.RecordingService.GetInstance(_repos);
                 service.Insert(recording);
                 return RedirectToAction("Index");
             }
 
+            service.SetListItemSources(recording);
             return View(recording);
         }
 

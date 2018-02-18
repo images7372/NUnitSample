@@ -302,6 +302,46 @@ namespace MediaLibrary.Tests.Services
         }
         #endregion
 
+        #region SetListItemSources
+        class SetListItemSources : ConnectionFixture
+        {
+            CreateViewModel _vm;
+            [SetUp]
+            public void SetUp()
+            {
+                _vm = new CreateViewModel()
+                {
+                    Title = "Sgt. Peppers Lonely Hearts Club Band",
+                    ReleaseDate = new DateTime(1967, 5, 26),
+                    TrackTitles = new List<string>()
+                    {
+                        "Sgt. Pepper's Lonely Hearts Club Band",
+                        "With a Little Help from My Friends",
+                        "Lucy in the Sky with Diamonds"
+                    },
+                    Durations = new List<int?>()
+                    {
+                        122,
+                        163,
+                        208
+                    },
+                    SelectedArtistId = 1,
+                    SelectedLabelId = 2
+                };
+            }
+
+            [Test]
+            public void Artists及びLabelsに値がある事()
+            {
+                var service = RecordingService.GetInstance(_repos);
+                service.SetListItemSources(_vm);
+
+                Assert.IsNotNull(_vm.Artists);
+                Assert.IsNotNull(_vm.Labels);
+            }
+        }
+        #endregion
+
     }
         
     
