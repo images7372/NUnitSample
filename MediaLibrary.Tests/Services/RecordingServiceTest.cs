@@ -289,18 +289,6 @@ namespace MediaLibrary.Tests.Services
         }
         #endregion
 
-        #region SetValue
-        [TestFixture]
-        class SetValueTest : ConnectionFixture
-        {
-            [Test, Ignore("テスト抜けてた")]
-            public void test()
-            {
-
-            }
-        }
-        #endregion
-
         #region DeleteAll
         class DeleteAllTest : ConnectionFixture
         {

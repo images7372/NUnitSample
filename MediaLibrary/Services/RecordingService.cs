@@ -85,7 +85,7 @@ namespace MediaLibrary.Services
             _rep.Save();
         }
 
-        public void SetValue(ViewModels.Recording.CreateViewModel vm, ref Recording entry)
+        private void SetValue(ViewModels.Recording.CreateViewModel vm, ref Recording entry)
         {
             entry.Title = vm.Title;
             entry.ReleaseDate = vm.ReleaseDate;
