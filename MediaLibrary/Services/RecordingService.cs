@@ -123,5 +123,10 @@ namespace MediaLibrary.Services
             vm.Artists = _rep.GetAll<Artist>().Select(r => new SelectListItem() { Value = r.Id.ToString(), Text = r.Name });
             vm.Labels = _rep.GetAll<Label>().Select(r => new SelectListItem() { Value = r.Id.ToString(), Text = r.Name });
         }
+
+        public List<Recording> GetAll()
+        {
+            return _rep.GetAll<Recording>().ToList();
+        }
     }
 }

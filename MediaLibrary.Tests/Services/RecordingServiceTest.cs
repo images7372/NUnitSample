@@ -273,6 +273,22 @@ namespace MediaLibrary.Tests.Services
         }
         #endregion
 
+        #region GetAll
+        class GetAllTest : RecordingServiceTest
+        {
+            [Test]
+            public void 初期登録データと後に登録したデータが共に取得出来る事()
+            {
+                _service.Insert(_vm);
+                _repos.Reload();
+
+                var cnt = _service.GetAll().Count;
+                Assert.That(cnt, Is.EqualTo(2));
+            }
+        }
+
+        #endregion
+
     }
         
     

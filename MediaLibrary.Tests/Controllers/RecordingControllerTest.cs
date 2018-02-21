@@ -253,5 +253,31 @@ namespace MediaLibrary.Tests.Controllers
         }
         #endregion
 
+        #region Index
+        class IndexTest : RecordingControllerTest
+        {
+            ViewResult _vr;
+            [SetUp]
+            public void SetUp()
+            {
+                _controller = new RecordingsController(_repos);
+                _vr = _controller.Index() as ViewResult;
+            }
+
+            [Test]
+            public void レコードが1件取得出来る事()
+            {
+                var records = _vr.Model as List<Recording>;
+                Assert.That(records.Count, Is.EqualTo(1));
+            }
+
+            [Test]
+            public void ビュー名が空である事()
+            {
+                Assert.That(_vr.ViewName, Is.EqualTo(""));
+            }
+        }
+        #endregion
+
     }
 }

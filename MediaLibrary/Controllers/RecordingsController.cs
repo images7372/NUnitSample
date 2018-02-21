@@ -25,10 +25,10 @@ namespace MediaLibrary.Controllers
             _repos = repos;
         }
 
-        //TODO:Service経由に修正予定
         public ActionResult Index()
         {
-            return View(db.Recordings.ToList());
+            var service = RecordingService.GetInstance(_repos);
+            return View(service.GetAll());
         }
 
         //TODO:Service経由に修正予定
