@@ -7,7 +7,7 @@ using System.Linq.Expressions;
 
 namespace MediaLibrary.Services
 {
-    public interface IRepository
+    public interface IRepository : IDisposable
     {
         IQueryable<T> GetAll<T>() where T : class;
         IQueryable<T> FindBy<T>(Expression<Func<T, bool>> expression) where T : class;

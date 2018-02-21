@@ -7,7 +7,7 @@ using MediaLibrary.Models;
 
 namespace MediaLibrary.Services
 {
-    public class Repository : IRepository, IDisposable
+    public class Repository : IRepository
     {
         MediaLibraryContext _db;
         public Repository()

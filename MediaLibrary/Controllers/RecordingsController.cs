@@ -137,6 +137,7 @@ namespace MediaLibrary.Controllers
         {
             if (disposing)
             {
+                _repos.Dispose();
                 db.Dispose();
             }
             base.Dispose(disposing);
