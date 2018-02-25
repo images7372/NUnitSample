@@ -128,5 +128,19 @@ namespace MediaLibrary.Services
         {
             return _rep.GetAll<Recording>().ToList();
         }
+
+        public DetailViewModel GetDetail(int id)
+        {
+            var rec = FillById(id);
+            return new DetailViewModel()
+            {
+                Id = rec.Id,
+                Title = rec.Title,
+                ReleaseDate = rec.ReleaseDate,
+                LabelName = rec.Label.Name,
+                ArtistName = rec.Artist.Name,
+                Tracks = rec.Tracks.ToList()
+            };
+        }
     }
 }

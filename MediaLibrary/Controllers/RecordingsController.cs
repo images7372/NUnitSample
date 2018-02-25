@@ -31,18 +31,20 @@ namespace MediaLibrary.Controllers
             return View(service.GetAll());
         }
 
-        //TODO:Service経由に修正予定
         public ActionResult Details(int? id)
         {
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Recording recording = db.Recordings.Find(id);
-            if (recording == null)
+
+            var service = RecordingService.GetInstance(_repos);
+            var key = (int)id;
+            if (service.IsExists(key) == false)
             {
                 return HttpNotFound();
             }
+            DetailViewModel recording = service.GetDetail(key);
             return View(recording);
         }
 

@@ -279,5 +279,38 @@ namespace MediaLibrary.Tests.Controllers
         }
         #endregion
 
+        #region Details
+        class DetailTest : RecordingControllerTest
+        {
+            [Test]
+            public void idがnullの場合にBadRequestを返す事()
+            {
+                var ret = _controller.Details(null) as HttpStatusCodeResult;
+                Assert.That(ret.StatusCode, Is.EqualTo(new HttpStatusCodeResult(HttpStatusCode.BadRequest).StatusCode));
+            }
+
+            [Test]
+            public void Idに該当するデータが無ければNotFoundを返す事()
+            {
+                var ret = _controller.Details(0) as HttpNotFoundResult;
+                Assert.That(ret.StatusCode, Is.EqualTo(new HttpStatusCodeResult(HttpStatusCode.NotFound).StatusCode));
+            }
+
+            [Test]
+            public void 初期表示するデータを取得出来る事()
+            {
+                var vr = _controller.Details(_initial.Id) as ViewResult;
+                var vm = vr.Model as DetailViewModel;
+
+                Assert.That(vm.Title, Is.EqualTo("Are You Experienced"));
+                Assert.That(vm.ArtistName, Is.EqualTo("Jimi Hendrix"));
+                Assert.That(vm.LabelName, Is.EqualTo("Track Record"));
+                Assert.That(vm.Id, Is.EqualTo(_initial.Id));
+                CollectionAssert.AreEqual(_initial.Tracks, vm.Tracks);
+            }
+
+        }
+        #endregion
+
     }
 }
